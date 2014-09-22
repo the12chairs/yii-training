@@ -42,7 +42,6 @@
                 array('label'=>Yii::t('main', 'en'), 'url'=>array('/site/setLang?lang=en')),
             ),
 		)); ?>
-
 	</div><!-- mainmenu -->
 	<?php if(isset($this->breadcrumbs)):?>
 		<?php $this->widget('zii.widgets.CBreadcrumbs', array(
@@ -55,12 +54,14 @@
 	<div class="clear"></div>
 
 	<div id="footer">
+    </div><!-- page -->
+    <?php $this->widget('ext.hoauth.widgets.HOAuth'); ?>
         <?php echo Yii::t('main', 'All Rights Reserved.'); ?>
         <br/>
 		<?php echo Yii::powered(); ?>
+
 	</div><!-- footer -->
 
-</div><!-- page -->
 
 </body>
 </html>

@@ -36,6 +36,15 @@ class Users extends CActiveRecord
             return false;
     }
 
+    /**
+     * For oauth extension
+     * @param $email
+     * @return mixed
+     */
+    public function findByEmail($email)
+    {
+        return self::model()->findByAttributes(array('email' => $email));
+    }
 
 	/**
 	 * @return string the associated database table name

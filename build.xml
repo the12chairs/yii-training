@@ -108,6 +108,7 @@
     <target name="chmods">
         <chmod file="./protected/runtime" mode="0777" verbose="true"/>
         <chmod file="./assets" mode="0777" verbose="true"/>
+        <chmod file="./protected/config" mode="0777" verbose="true"/>
     </target>
 
     <target name="testing">
