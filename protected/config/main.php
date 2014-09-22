@@ -15,6 +15,12 @@ return array(
     'aliases' => array(
         'bootstrap' => realpath(__DIR__ . '/../extensions/bootstrap'),
     ),
+    'behaviors' => array(
+        array('class' => 'application.extensions.CorsBehavior',
+            'route' => array('ApiController/list', 'ApiController/view', ),
+            'allowOrigin' => '*.domain.com'
+        ),
+    ),
 // autoloading model and component classes
     'import'=>array(
         'application.models.*',
@@ -59,6 +65,11 @@ return array(
                 '<controller:\w+>/<id:\d+>'=>'<controller>/view',
                 '<controller:\w+>/<action:\w+>/<id:\d+>'=>'<controller>/<action>',
                 '<controller:\w+>/<action:\w+>'=>'<controller>/<action>',
+                array('api/list', 'pattern'=>'api/<model:\w+>', 'verb'=>'GET'),
+                array('api/view', 'pattern'=>'api/<model:\w+>/<id:\d+>', 'verb'=>'GET'),
+                array('api/update', 'pattern'=>'api/<model:\w+>/<id:\d+>', 'verb'=>'PUT'),
+                array('api/delete', 'pattern'=>'api/<model:\w+>/<id:\d+>', 'verb'=>'DELETE'),
+                array('api/create', 'pattern'=>'api/<model:\w+>', 'verb'=>'POST'),
             ),
         ),
         'db'=>array(
