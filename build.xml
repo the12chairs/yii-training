@@ -10,7 +10,7 @@
         <property file="build.properties"/>
     </target>
     <target name="prepare">
-        <echo msg="Making directory $build.dir}" />
+        <echo msg="Making directory $build.dir" />
         <mkdir dir="${build.dir}" />
     </target>
     <target name="css.minify.loop">
@@ -26,8 +26,21 @@
     </target>
     <target name="css.minify">
         <echo msg="Minimizing css" />
-        <exec command="java -jar tools/yuicompressor.jar ${absfilename} -o ${absfilename}" />
+        <exec command="java -jar ../tools/yuicompressor.jar ${absfilename} -o ${absfilename}" />
     </target>
+
+
+    <target name="images.copy">
+        <copy todir="build/css">
+            <fileset dir="./css">
+                <include name="*.gif"/>
+                <include name="*.png"/>
+                <include name="*.jpeg"/>
+                <include name="*.jpg"/>
+            </fileset>
+        </copy>
+    </target>
+
     <target name="js.minify.loop">
         <mkdir dir="${build.dir}/js" />
         <copy todir="${build.dir}/js">
@@ -41,7 +54,7 @@
     </target>
     <target name="js.minify">
         <echo msg="Minifying js" />
-        <exec command="java -jar tools/yuicompressor.jar ${absfilename} -o ${absfilename}" />
+        <exec command="java -jar ../tools/yuicompressor.jar ${absfilename} -o ${absfilename}" />
     </target>
     <target name="migrate">
         <echo message="Setting up migrations..."/>
