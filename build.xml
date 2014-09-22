@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="Musicband" default="build">
+    <fileset dir="./css" id="files.css">
+        <include name="*.css" />
+    </fileset>
+    <fileset dir="./js" id="files.js">
+        <include name="*.js"/>
+    </fileset>
+    <target name="load.properties">
+        <property file="build.properties"/>
+    </target>
+    <target name="prepare">
+        <echo msg="Making directory $build.dir}" />
+        <mkdir dir="${build.dir}" />
+    </target>
+    <target name="css.minify.loop">
+        <mkdir dir="${build.dir}/css" />
+        <copy todir="${build.dir}/css">
+            <fileset refid="files.css" />
+        </copy>
+        <foreach param="filename" absparam="absfilename" target="css.minify">
+            <fileset dir="${build.dir}/css">
+                <include name="*.css"/>
+            </fileset>
+        </foreach>
+    </target>
+    <target name="css.minify">
+        <echo msg="Minimizing css" />
+        <exec command="java -jar tools/yuicompressor.jar ${absfilename} -o ${absfilename}" />
+    </target>
+    <target name="js.minify.loop">
+        <mkdir dir="${build.dir}/js" />
+        <copy todir="${build.dir}/js">
+            <fileset refid="files.js" />
+        </copy>
+        <foreach param="filename" absparam="absfilename" target="js.minify">
+            <fileset dir="${build.dir}/js">
+                <include name="*.js"/>
+            </fileset>
+        </foreach>
+    </target>
+    <target name="js.minify">
+        <echo msg="Minifying js" />
+        <exec command="java -jar tools/yuicompressor.jar ${absfilename} -o ${absfilename}" />
+    </target>
+    <target name="migrate">
+        <echo message="Setting up migrations..."/>
+        <exec command="./yiic migrate --interactive=0" dir="protected" />
+        <echo message="Done!"/>
+    </target>
+    <target name="repo">
+        <property name="repo.dir" value="." />
+        <resolvepath propertyName="repo.dir.resolved" file="${repo.dir}" />
+        <echo message="Updating from git reposityry..."/>
+        <gitpull
+                repository="${repo.dir.resolved}" all="true" />
+        <echo message="Done!"/>
+    </target>
+    <target name="template.generate">
+        <copy file="templates/main.php" tofile="protected/config/main.php" overwrite="true">
+            <filterchain>
+                <replacetokens begintoken="%%" endtoken="%%">
+                    <!-- language -->
+                    <token key="sourceLang" value="en"/>
+                    <token key="defaultLang" value="ru"/>
+                    <token key="giiPass" value="1"/>
+                    <token key="giiPass" value="1"/>
+                    <token key="dbname" value="musicband"/>
+                    <token key="dbuser" value="root"/>
+                    <token key="dbpassword" value="123456"/>
+                </replacetokens>
+            </filterchain>
+        </copy>
+    </target>
+    <target name="chmods">
+        <chmod file="./protected/runtime" mode="0777" verbose="true"/>
+        <chmod file="./assets" mode="0777" verbose="true"/>
+    </target>
+
+    <target name="testing">
+        <exec command="phpunit --bootstrap protected/tests/bootstrap.php --configuration protected/tests/phpunit.xml protected/tests/" passthru="true"/>
+    </target>
+
+    <target name="build" depends="load.properties, prepare, css.minify.loop, js.minify.loop, template.generate, chmods, testing"></target>
+</project>
