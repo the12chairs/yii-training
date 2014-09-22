@@ -33,6 +33,13 @@ return array(
             'generatorPaths' => array('bootstrap.gii'),
         ),
     ),
+
+    'behaviors' => array(
+        array('class' => 'application.extensions.CorsBehavior',
+            'route' => array('ApiController/list'),
+            'allowOrigin' => 'example.com'
+        ),
+    ),
 // application components
     'components'=>array(
         'user'=>array(

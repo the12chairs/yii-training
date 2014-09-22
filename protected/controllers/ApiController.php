@@ -165,8 +165,8 @@ class ApiController extends Controller
     public function actionUpdate()
     {
         // Parse the PUT parameters. This didn't work: parse_str(file_get_contents('php://input'), $put_vars);
-        $json = file_get_contents('php://input'); //$GLOBALS['HTTP_RAW_POST_DATA'] is not preferred: http://www.php.net/manual/en/ini.core.php#ini.always-populate-raw-post-data
-        $put_vars = CJSON::decode($json,true);  //true means use associative array
+        //$json = file_get_contents('php://input'); //$GLOBALS['HTTP_RAW_POST_DATA'] is not preferred: http://www.php.net/manual/en/ini.core.php#ini.always-populate-raw-post-data
+        //$put_vars = CJSON::decode($json,true);  //true means use associative array
 
         switch($_GET['model'])
         {
