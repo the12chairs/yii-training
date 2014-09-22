@@ -25,7 +25,7 @@ class ApiController extends Controller
     public function actionList()
     {
         // Get the respective model instance
-        switch($_GET['model'])
+        switch(Yii::app()->request->getQuery('model'))
         {
             case 'songs':
                 // Complex method with getting linked data
@@ -89,6 +89,9 @@ class ApiController extends Controller
             case 'genres':
                 $model = Genres::model()->findByPk($_GET['id']);
                 break;
+            case 'users':
+                $model = Users::model()->findByPk($_GET['id']);
+                break;
             case 'genres':
             default:
                 $this->_sendResponse(501, sprintf(
@@ -112,12 +115,22 @@ class ApiController extends Controller
             case 'songs':
                 $model = new Songs;
                 break;
+            case 'users':
+                $model = new Users;
+                break;
+            case 'genres':
+                $model = new Genres;
+                break;
+            case 'playlists':
+                $model = new Playlists;
+                break;
             default:
                 $this->_sendResponse(501,
                     sprintf('Mode <b>create</b> is not implemented for model <b>%s</b>',
                         $_GET['model']) );
                 Yii::app()->end();
         }
+
         // Try to assign POST values to attributes
         foreach($_POST as $var=>$value) {
             // Does the model have this attribute? If not raise an error
@@ -158,8 +171,17 @@ class ApiController extends Controller
         switch($_GET['model'])
         {
             // Find respective model
-            case 'posts':
+            case 'songs':
                 $model = Songs::model()->findByPk($_GET['id']);
+                break;
+            case 'users':
+                $model = Users::model()->findByPk($_GET['id']);
+                break;
+            case 'genres':
+                $model = Genres::model()->findByPk($_GET['id']);
+                break;
+            case 'playlists':
+                $model = Playlists::model()->findByPk($_GET['id']);
                 break;
             default:
                 $this->_sendResponse(501,
@@ -210,8 +232,17 @@ class ApiController extends Controller
         switch($_GET['model'])
         {
             // Load the respective model
-            case 'posts':
+            case 'songs':
                 $model = Songs::model()->findByPk($_GET['id']);
+                break;
+            case 'users':
+                $model = Users::model()->findByPk($_GET['id']);
+                break;
+            case 'genres':
+                $model = Genres::model()->findByPk($_GET['id']);
+                break;
+            case 'playlists':
+                $model = Playlists::model()->findByPk($_GET['id']);
                 break;
             default:
                 $this->_sendResponse(501,
@@ -228,16 +259,12 @@ class ApiController extends Controller
         // Delete the model
         $num = $model->delete();
         if($num>0)
-            $this->_sendResponse(200, $num);
+            $this->_sendResponse(200, 'Deleted');
         else
             $this->_sendResponse(500,
                 sprintf("Error: Couldn't delete model <b>%s</b> with ID <b>%s</b>.",
                     $_GET['model'], $_GET['id']) );
     }
-
-
-
-
 
     private function _sendResponse($status = 200, $body = '', $content_type = 'text/html')
     {
