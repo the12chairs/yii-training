@@ -104,10 +104,36 @@ class Songs extends CActiveRecord
             {
                 $genresNames[] = $genre->name;
             }
-            $resultRow[] = array('id'=>$song->id, 'name' =>$song->title, 'band' => $song->band->name, 'genres' => $genresNames);
+            $resultRow[] = array('id'=>$song->id, 'title' =>$song->title, 'band' => $song->band->name, 'genres' => $genresNames);
 
         }
         return $resultRow;
+    }
+
+
+    /**
+     * Return single song
+     * @param $id
+     * @return array
+     */
+    public function restView($id)
+    {
+        $criteria = new CDbCriteria(array(
+            'alias'=>'s',
+            'condition'=>'s.id = :id',
+            'params'=>array(':id' => $id),
+            'with'=>array('genres', 'band'),
+        ));
+        $song = Songs::model()->find($criteria);
+
+        foreach($song['genres'] as $genre)
+        {
+            $genresNames[] = $genre->name;
+        }
+
+        $resultRow = array('id'=>$song->id, 'title' =>$song->title, 'band' => $song->band->name, 'genres' => $genresNames);
+        return $resultRow;
+
     }
 
 	/**

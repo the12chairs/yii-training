@@ -1,18 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="Musicband" default="build">
+
     <fileset dir="./css" id="files.css">
         <include name="*.css" />
     </fileset>
+
     <fileset dir="./js" id="files.js">
         <include name="*.js"/>
     </fileset>
+
     <target name="load.properties">
         <property file="build.properties"/>
     </target>
+
     <target name="prepare">
         <echo msg="Making directory $build.dir" />
         <mkdir dir="${build.dir}" />
     </target>
+
     <target name="css.minify.loop">
         <mkdir dir="${build.dir}/css" />
         <copy todir="${build.dir}/css">
@@ -24,11 +29,11 @@
             </fileset>
         </foreach>
     </target>
+
     <target name="css.minify">
         <echo msg="Minimizing css" />
         <exec command="java -jar ../tools/yuicompressor.jar ${absfilename} -o ${absfilename}" />
     </target>
-
 
     <target name="images.copy">
         <copy todir="build/css">

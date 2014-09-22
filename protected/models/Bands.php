@@ -36,6 +36,38 @@ class Bands extends CActiveRecord
 		);
 	}
 
+
+    /**
+     * Returns list of bands
+     * @return array|null
+     */
+    public function restList()
+    {
+        $bands = Bands::model()->findAll();
+        $resultRow = null;
+        foreach($bands as $band)
+        {
+            $resultRow[] = array('id'=>$band->id, 'name' => $band->name, 'songsCount' => $band->songsCount);
+
+        }
+        return $resultRow;
+    }
+
+
+    /**
+     * Return single band
+     * @param $id
+     * @return array
+     */
+    public function restView($id)
+    {
+
+        $band = Bands::model()->findByPk($id);
+        $resultRow = array('id' => $band->id, 'name' => $band->name, 'songsCount' =>$band->songsCount);
+        return $resultRow;
+
+    }
+
 	/**
 	 * @return array relational rules.
 	 */

@@ -83,6 +83,21 @@ class Playlists extends CActiveRecord
     }
 
 
+    public function restList($id)
+    {
+        $criteria = new CDbCriteria();
+        $criteria->condition = 'user_id = :uid';
+        $criteria->with = 'song';
+        $criteria->params = array(':uid' => $id);
+        $list = Playlists::model()->findAll($criteria);
+
+        $resultRow = null;
+        foreach($list as $song)
+        {
+            $resaultRow[] = array('id' => $song['song']->id, 'title' => $song['song']->title, 'band'=> $song['song']->band->name);
+        }
+        return $resaultRow;
+    }
 
 	/**
 	 * Retrieves a list of models based on the current search/filter conditions.
@@ -114,7 +129,6 @@ class Playlists extends CActiveRecord
                 'user_search'=>array(
                     'asc'=>'usr.email',
                     'desc'=>'usr.email DESC',
-
                 ),
 
                 'id',
