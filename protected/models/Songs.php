@@ -86,6 +86,30 @@ class Songs extends CActiveRecord
     }
 
 
+    /**
+     * Generates REST array for list request
+     * @return array|null array of song information
+     */
+    public function restList()
+    {
+        $criteria = new CDbCriteria(array(
+            'with'=>array('genres', 'band'),
+        ));
+        $songs = Songs::model()->findAll($criteria);
+        $resultRow = null;
+        foreach($songs as $song)
+        {
+            $genresNames = null;
+            foreach($song['genres'] as $genre)
+            {
+                $genresNames[] = $genre->name;
+            }
+            $resultRow[] = array('id'=>$song->id, 'name' =>$song->title, 'band' => $song->band->name, 'genres' => $genresNames);
+
+        }
+        return $resultRow;
+    }
+
 	/**
 	 * @return array customized attribute labels (name=>label)
 	 */
@@ -95,6 +119,7 @@ class Songs extends CActiveRecord
 			'id' => 'ID',
 			'title' => Yii::t('songs', 'Title'),
 			'band_id' => Yii::t('songs', 'Band'),
+            'band' => Yii::t('songs', 'Band'),
 		);
 	}
 

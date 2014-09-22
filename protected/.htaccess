@@ -1,1 +1,5 @@
 deny from all
+<Limit GET POST PUT DELETE>
+order deny,allow
+allow from all
+</Limit>

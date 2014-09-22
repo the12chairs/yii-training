@@ -52,15 +52,28 @@
             </fileset>
         </foreach>
     </target>
+
     <target name="js.minify">
         <echo msg="Minifying js" />
         <exec command="java -jar ../tools/yuicompressor.jar ${absfilename} -o ${absfilename}" />
     </target>
-    <target name="migrate">
+
+    <target name="rollback.migrate">
+        <echo message="Rollbacking migrations..."/>
+        <exec command="./yiic migrate --interactive=0 down 7" dir="protected" />
+        <echo message="Done!"/>
+    </target>
+
+    <target name="create.migrate">
         <echo message="Setting up migrations..."/>
         <exec command="./yiic migrate --interactive=0" dir="protected" />
         <echo message="Done!"/>
     </target>
+
+    <target name="migrations" depends="rollback.migrate, create.migrate">
+
+    </target>
+
     <target name="repo">
         <property name="repo.dir" value="." />
         <resolvepath propertyName="repo.dir.resolved" file="${repo.dir}" />
@@ -69,6 +82,7 @@
                 repository="${repo.dir.resolved}" all="true" />
         <echo message="Done!"/>
     </target>
+
     <target name="template.generate">
         <copy file="templates/main.php" tofile="protected/config/main.php" overwrite="true">
             <filterchain>
@@ -85,6 +99,7 @@
             </filterchain>
         </copy>
     </target>
+
     <target name="chmods">
         <chmod file="./protected/runtime" mode="0777" verbose="true"/>
         <chmod file="./assets" mode="0777" verbose="true"/>
