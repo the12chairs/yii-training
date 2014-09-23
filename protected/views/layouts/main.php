@@ -21,6 +21,7 @@
 </head>
 
 <body>
+
 <div class="container" id="page">
 
 	<div id="header">
@@ -40,28 +41,21 @@
 				array('label'=>Yii::t('main', 'Logout') .'('.Yii::app()->user->name.')', 'url'=>array('/site/logout'), 'visible'=>!Yii::app()->user->isGuest),
                 array('label'=>Yii::t('main', 'ru'), 'url'=>array('/site/setLang?lang=ru')),
                 array('label'=>Yii::t('main', 'en'), 'url'=>array('/site/setLang?lang=en')),
+
             ),
 		)); ?>
+
 	</div><!-- mainmenu -->
 	<?php if(isset($this->breadcrumbs)):?>
 		<?php $this->widget('zii.widgets.CBreadcrumbs', array(
 			'links'=>$this->breadcrumbs,
 		)); ?><!-- breadcrumbs -->
 	<?php endif?>
-
+    <?php $this->widget('ext.hoauth.widgets.HOAuth'); ?>
 	<?php echo $content; ?>
 
-	<div class="clear"></div>
-
-	<div id="footer">
-    </div><!-- page -->
-    <?php $this->widget('ext.hoauth.widgets.HOAuth'); ?>
-        <?php echo Yii::t('main', 'All Rights Reserved.'); ?>
-        <br/>
-		<?php echo Yii::powered(); ?>
-
-	</div><!-- footer -->
-
+	<div class="clear">
+	</div>
 
 </body>
 </html>

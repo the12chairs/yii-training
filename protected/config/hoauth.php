@@ -17,6 +17,7 @@ return
 
 		"providers" => array ( 
 			// openid providers
+            /*
 			"OpenID" => array (
 				"enabled" => true
 			),
@@ -29,7 +30,7 @@ return
 				"enabled" => true,
 				"keys"    => array ( "id" => "", "secret" => "" )
 			),
-
+            */
 			"Google" => array ( 
 				"enabled" => true,
 				"keys"    => array ( "id" => "", "secret" => "" )
@@ -44,7 +45,7 @@ return
 				"enabled" => true,
 				"keys"    => array ( "key" => "", "secret" => "" ) 
 			),
-
+            /*
 			// windows live
 			"Live" => array ( 
 				"enabled" => true,
@@ -65,6 +66,7 @@ return
 				"enabled" => true,
 				"keys"    => array ( "id" => "", "secret" => "" ) 
 			),
+            */
 		),
 
 		// if you want to enable logging, set 'debug_mode' to true  then provide a writable file by the web server on "debug_file"
