@@ -12,14 +12,14 @@ class Controller extends CController
     function init()
     {
         Yii::app()->language = Yii::app()->session['lang'];
-        /*
-        $ad = new Users;
-        $ad->login = 'admin';
-        $ad->email = 'admin@admin.com';
-        $ad->password = '123456';
-        $ad->role = 'administrator';
-        $ad->save();
-        */
+
+        //$ad = new Users;
+        //$ad->login = 'admin';
+        //$ad->email = 'admin@admin.com';
+        //$ad->password = '123456';
+        //$ad->role = 'administrator';
+        //$ad->save();
+
     }
 
 	/**

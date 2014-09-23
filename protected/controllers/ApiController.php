@@ -8,11 +8,8 @@ class ApiController extends Controller
      */
     Const APPLICATION_ID = 'ASCCPE';
 
-    /**
-     * Default response format
-     * either 'json' or 'xml'
-     */
     private $format = 'json';
+
     /**
      * @return array action filters
      */
@@ -21,9 +18,12 @@ class ApiController extends Controller
         return array();
     }
 
-    // Actions
+    /**
+     * List all items. Some tricks with Songs and Playlists.
+     */
     public function actionList()
     {
+
         // Get the respective model instance
         switch(Yii::app()->request->getQuery('model'))
         {
@@ -33,6 +33,7 @@ class ApiController extends Controller
                 Yii::app()->end();
                 break;
             case 'users':
+                _checkAdmin();
                 $models = Users::model()->findAll();
                 break;
             case 'genres':
@@ -43,14 +44,15 @@ class ApiController extends Controller
                 Yii::app()->end();
                 break;
             case 'playlists':
-                $this->_sendResponse(200, CJSON::encode(Playlists::model()->restList($_GET['id'])));
+                _checkAuth();
+                $this->_sendResponse(200, CJSON::encode(Playlists::model()->restList(Yii::app()->request->getQuery('id'))));
                 Yii::app()->end();
                 break;
             default:
                 // Model not implemented error
                 $this->_sendResponse(501, sprintf(
                     'Error: Mode <b>list</b> is not implemented for model <b>%s</b>',
-                    $_GET['model']) );
+                    Yii::app()->request->getQuery('model')) );
                 Yii::app()->end();
         }
 
@@ -58,7 +60,7 @@ class ApiController extends Controller
         if(empty($models)) {
             // No
             $this->_sendResponse(200,
-                sprintf('No items where found for model <b>%s</b>', $_GET['model']) );
+                sprintf('No items where found for model <b>%s</b>', Yii::app()->request->getQuery('model')));
         } else {
             // Prepare response
             $rows = array();
@@ -69,47 +71,57 @@ class ApiController extends Controller
         }
     }
 
+    /**
+     * View $model
+     */
     public function actionView()
     {
-        // Check if id was submitted via GET
-        if(!isset($_GET['id']))
+        // views by get
+        $id = Yii::app()->request->getQuery('id');
+        $model = null;
+        if(!isset($id))
             $this->_sendResponse(500, 'Error: Parameter <b>id</b> is missing' );
 
-        switch($_GET['model'])
+        switch(Yii::app()->request->getQuery('model'))
         {
             // Find respective model
             case 'songs':
-                $this->_sendResponse(200, CJSON::encode(Songs::model()->restView($_GET['id'])));
+                _authAdmin();
+                $this->_sendResponse(200, CJSON::encode(Songs::model()->restView($id)));
                 Yii::app()->end();
                 break;
             case 'bands':
-                $this->_sendResponse(200, CJSON::encode(Bands::model()->restView($_GET['id'])));
+                $this->_sendResponse(200, CJSON::encode(Bands::model()->restView($id)));
                 Yii::app()->end();
                 break;
             case 'genres':
-                $model = Genres::model()->findByPk($_GET['id']);
+                $model = Genres::model()->findByPk($id);
                 break;
             case 'users':
-                $model = Users::model()->findByPk($_GET['id']);
+                $model = Users::model()->findByPk($id);
                 break;
             case 'genres':
             default:
                 $this->_sendResponse(501, sprintf(
                     'Mode <b>view</b> is not implemented for model <b>%s</b>',
-                    $_GET['model']) );
+                    Yii::app()->request->getQuery('model')) );
                 Yii::app()->end();
         }
-        // Did we find the requested model? If not, raise an error
+        // No model found
         if(is_null($model))
-            $this->_sendResponse(404, 'No Item found with id '.$_GET['id']);
+            $this->_sendResponse(404, 'No Item found with id '.$id);
         else
             $this->_sendResponse(200, CJSON::encode($model));
     }
 
 
+    /**
+     * Create with POST
+     */
     public function actionCreate()
     {
-        switch($_GET['model'])
+        _authAdmin();
+        switch(Yii::app()->request->getQuery('model'))
         {
             // Get an instance of the respective model
             case 'songs':
@@ -127,7 +139,7 @@ class ApiController extends Controller
             default:
                 $this->_sendResponse(501,
                     sprintf('Mode <b>create</b> is not implemented for model <b>%s</b>',
-                        $_GET['model']) );
+                        Yii::app()->request->getQuery('id')) );
                 Yii::app()->end();
         }
 
@@ -139,7 +151,7 @@ class ApiController extends Controller
             else
                 $this->_sendResponse(500,
                     sprintf('Parameter <b>%s</b> is not allowed for model <b>%s</b>', $var,
-                        $_GET['model']) );
+                        Yii::app()->request->getQuery('id')) );
         }
         // Try to save the model
         if($model->save())
@@ -147,7 +159,7 @@ class ApiController extends Controller
         else {
             // Errors occurred
             $msg = "<h1>Error</h1>";
-            $msg .= sprintf("Couldn't create model <b>%s</b>", $_GET['model']);
+            $msg .= sprintf("Couldn't create model <b>%s</b>", Yii::app()->request->getQuery('model'));
             $msg .= "<ul>";
             foreach($model->errors as $attribute=>$attr_errors) {
                 $msg .= "<li>Attribute: $attribute</li>";
@@ -162,48 +174,49 @@ class ApiController extends Controller
     }
 
 
+    /*
+     * Update with POST
+     */
     public function actionUpdate()
     {
-        // Parse the PUT parameters. This didn't work: parse_str(file_get_contents('php://input'), $put_vars);
-        //$json = file_get_contents('php://input'); //$GLOBALS['HTTP_RAW_POST_DATA'] is not preferred: http://www.php.net/manual/en/ini.core.php#ini.always-populate-raw-post-data
-        //$put_vars = CJSON::decode($json,true);  //true means use associative array
-
-        switch($_GET['model'])
+        _authAdmin();
+        // Using POST
+        $id = Yii::app()->request->getQuery('id');
+        switch(Yii::app()->request->getQuery('model'))
         {
             // Find respective model
             case 'songs':
-                $model = Songs::model()->findByPk($_GET['id']);
+                $model = Songs::model()->findByPk($id);
                 break;
             case 'users':
-                $model = Users::model()->findByPk($_GET['id']);
+                $model = Users::model()->findByPk($id);
                 break;
             case 'genres':
-                $model = Genres::model()->findByPk($_GET['id']);
+                $model = Genres::model()->findByPk($id);
                 break;
             case 'playlists':
-                $model = Playlists::model()->findByPk($_GET['id']);
+                $model = Playlists::model()->findByPk($id);
                 break;
             default:
                 $this->_sendResponse(501,
                     sprintf( 'Error: Mode <b>update</b> is not implemented for model <b>%s</b>',
-                        $_GET['model']) );
+                        Yii::app()->request->getQuery('model')) );
                 Yii::app()->end();
         }
         // Did we find the requested model? If not, raise an error
         if($model === null)
             $this->_sendResponse(400,
                 sprintf("Error: Didn't find any model <b>%s</b> with ID <b>%s</b>.",
-                    $_GET['model'], $_GET['id']) );
+                    Yii::app()->request->getQuery('model'), $id) );
 
-        // Try to assign PUT parameters to attributes
         foreach($_POST as $var=>$value) {
-            // Does model have this attribute? If not, raise an error
+            // Check attr-s
             if($model->hasAttribute($var))
                 $model->$var = $value;
             else {
                 $this->_sendResponse(500,
                     sprintf('Parameter <b>%s</b> is not allowed for model <b>%s</b>',
-                        $var, $_GET['model']) );
+                        $var, Yii::app()->request->getQuery('model')) );
             }
         }
         // Try to save the model
@@ -213,7 +226,7 @@ class ApiController extends Controller
         {
             // Errors occurred
             $msg = "<h1>Error</h1>";
-            $msg .= sprintf("Couldn't update model <b>%s</b>", $_GET['model']);
+            $msg .= sprintf("Couldn't update model <b>%s</b>", Yii::app()->request->getQuery('model'));
             $msg .= "<ul>";
             foreach($model->errors as $attribute=>$attr_errors) {
                 $msg .= "<li>Attribute: $attribute</li>";
@@ -227,34 +240,40 @@ class ApiController extends Controller
         }
     }
 
+    /**
+     * Delete by id
+     */
     public function actionDelete()
     {
-        switch($_GET['model'])
+        _authAdmin();
+        $id = Yii::app()->request->getQuery('id');
+        $model = null;
+        switch(Yii::app()->request->getQuery('model'))
         {
             // Load the respective model
             case 'songs':
-                $model = Songs::model()->findByPk($_GET['id']);
+                $model = Songs::model()->findByPk($id);
                 break;
             case 'users':
-                $model = Users::model()->findByPk($_GET['id']);
+                $model = Users::model()->findByPk($id);
                 break;
             case 'genres':
-                $model = Genres::model()->findByPk($_GET['id']);
+                $model = Genres::model()->findByPk($id);
                 break;
             case 'playlists':
-                $model = Playlists::model()->findByPk($_GET['id']);
+                $model = Playlists::model()->findByPk($id);
                 break;
             default:
                 $this->_sendResponse(501,
                     sprintf('Error: Mode <b>delete</b> is not implemented for model <b>%s</b>',
-                        $_GET['model']) );
+                        Yii::app()->request->getQuery('model')) );
                 Yii::app()->end();
         }
         // Was a model found? If not, raise an error
         if($model === null)
             $this->_sendResponse(400,
                 sprintf("Error: Didn't find any model <b>%s</b> with ID <b>%s</b>.",
-                    $_GET['model'], $_GET['id']) );
+                    Yii::app()->request->getQuery('model'), $id) );
 
         // Delete the model
         $num = $model->delete();
@@ -263,15 +282,20 @@ class ApiController extends Controller
         else
             $this->_sendResponse(500,
                 sprintf("Error: Couldn't delete model <b>%s</b> with ID <b>%s</b>.",
-                    $_GET['model'], $_GET['id']) );
+                    Yii::app()->request->getQuery('model'), $id) );
     }
 
+    /**
+     * Sending response
+     * @param int $status
+     * @param string $body
+     * @param string $content_type
+     */
     private function _sendResponse($status = 200, $body = '', $content_type = 'text/html')
     {
-        // set the status
+        // set headers
         $status_header = 'HTTP/1.1 ' . $status . ' ' . $this->_getStatusCodeMessage($status);
         header($status_header);
-        // and the content type
         header('Content-type: ' . $content_type);
 
         // pages with body are easy
@@ -286,9 +310,7 @@ class ApiController extends Controller
             // create some body messages
             $message = '';
 
-            // this is purely optional, but makes the pages a little nicer to read
-            // for your users.  Since you won't likely send a lot of different status codes,
-            // this also shouldn't be too ponderous to maintain
+            // return some error message
             switch($status)
             {
                 case 401:
@@ -331,12 +353,14 @@ class ApiController extends Controller
     }
 
 
-
+    /**
+     * Returns message code
+     * @param $status
+     * @return string
+     */
     private function _getStatusCodeMessage($status)
     {
-        // these could be stored in a .ini file and loaded
-        // via parse_ini_file()... however, this will suffice
-        // for an example
+        // Code messages
         $codes = Array(
             200 => 'OK',
             400 => 'Bad Request',
@@ -350,9 +374,12 @@ class ApiController extends Controller
         return (isset($codes[$status])) ? $codes[$status] : '';
     }
 
+
+    /**
+     * Auth user
+     */
     private function _checkAuth()
     {
-        // Check if we have the USERNAME and PASSWORD HTTP headers set?
         if(!(isset($_SERVER['HTTP_X_EMAIL']) and isset($_SERVER['HTTP_X_PASSWORD']))) {
             // Error: Unauthorized
             $this->_sendResponse(401);
@@ -368,6 +395,30 @@ class ApiController extends Controller
             // Error: Unauthorized
             $this->_sendResponse(401, 'Error: User Password is invalid');
         }
+    }
+
+    /**
+     * Auth admin
+     */
+    private function _authAdmin()
+    {
+        if(!(isset($_SERVER['HTTP_X_EMAIL']) and isset($_SERVER['HTTP_X_PASSWORD']))) {
+            // Error: Unauthorized
+            $this->_sendResponse(401);
+        }
+        $email = $_SERVER['HTTP_X_EMAIL'];
+        $password = $_SERVER['HTTP_X_PASSWORD'];
+        // Find the user
+        $user=Users::model()->find('LOWER(email)=?',array(strtolower($email)));
+        if($user===null) {
+            // Error: Unauthorized
+            $this->_sendResponse(401, 'Error: User Name is invalid');
+        } else if(!$user->validatePassword($password)) {
+            // Error: Unauthorized
+            $this->_sendResponse(401, 'Error: User Password is invalid');
+        } else if($user->role != 'administrator')
+            $this->_sendResponse(403, 'Error: Admin only');
+
     }
 
 

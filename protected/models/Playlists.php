@@ -85,6 +85,7 @@ class Playlists extends CActiveRecord
 
     public function restList($id)
     {
+
         $criteria = new CDbCriteria();
         $criteria->condition = 'user_id = :uid';
         $criteria->with = 'song';
@@ -94,9 +95,10 @@ class Playlists extends CActiveRecord
         $resultRow = null;
         foreach($list as $song)
         {
-            $resaultRow[] = array('id' => $song['song']->id, 'title' => $song['song']->title, 'band'=> $song['song']->band->name);
+            $resultRow[] = array('id' => $song['song']->id, 'title' => $song['song']->title, 'band'=> $song['song']->band->name);
         }
-        return $resaultRow;
+
+        return $resultRow;
     }
 
 	/**
