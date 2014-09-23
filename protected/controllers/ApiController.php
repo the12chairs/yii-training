@@ -18,7 +18,16 @@ class ApiController extends Controller
         return array();
     }
 
+
     /**
+     *
+     * AUTH REMOVED!
+     * It needs for jquery training
+     *
+     */
+
+    /**
+     *
      * List all items. Some tricks with Songs and Playlists.
      */
     public function actionList()
@@ -33,7 +42,7 @@ class ApiController extends Controller
                 Yii::app()->end();
                 break;
             case 'users':
-                _checkAdmin();
+                //_checkAdmin();
                 $models = Users::model()->findAll();
                 break;
             case 'genres':
@@ -44,7 +53,7 @@ class ApiController extends Controller
                 Yii::app()->end();
                 break;
             case 'playlists':
-                _checkAuth();
+                //_checkAuth();
                 $this->_sendResponse(200, CJSON::encode(Playlists::model()->restList(Yii::app()->request->getQuery('id'))));
                 Yii::app()->end();
                 break;
@@ -120,7 +129,7 @@ class ApiController extends Controller
      */
     public function actionCreate()
     {
-        _authAdmin();
+        //_authAdmin();
         switch(Yii::app()->request->getQuery('model'))
         {
             // Get an instance of the respective model
@@ -179,7 +188,7 @@ class ApiController extends Controller
      */
     public function actionUpdate()
     {
-        _authAdmin();
+        //_authAdmin();
         // Using POST
         $id = Yii::app()->request->getQuery('id');
         switch(Yii::app()->request->getQuery('model'))
@@ -245,7 +254,7 @@ class ApiController extends Controller
      */
     public function actionDelete()
     {
-        _authAdmin();
+        //_authAdmin();
         $id = Yii::app()->request->getQuery('id');
         $model = null;
         switch(Yii::app()->request->getQuery('model'))
