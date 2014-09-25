@@ -20,7 +20,7 @@
                 <br />
                 <?php echo $genre['name']; ?>
 
-                <?php echo CHtml::link('Remove',array('removeGenre',
+                <?php echo CHtml::link(Yii::t('songs','Remove'),array('removeGenre',
                     'song' => $song->id,
                     'genre' => $genre['id'])
                 ); ?>
