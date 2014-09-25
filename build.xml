@@ -93,13 +93,13 @@
             <filterchain>
                 <replacetokens begintoken="%%" endtoken="%%">
                     <!-- language -->
-                    <token key="sourceLang" value="en"/>
-                    <token key="defaultLang" value="ru"/>
+                    <token key="sourceLang" value="${src.lang}"/>
+                    <token key="defaultLang" value="${def.lang}"/>
                     <token key="giiPass" value="1"/>
                     <token key="giiPass" value="1"/>
-                    <token key="dbname" value="musicband"/>
-                    <token key="dbuser" value="root"/>
-                    <token key="dbpassword" value="123456"/>
+                    <token key="dbname" value="${bd.name}"/>
+                    <token key="dbuser" value="${root}"/>
+                    <token key="dbpassword" value="${root.pass}"/>
                 </replacetokens>
             </filterchain>
         </copy>

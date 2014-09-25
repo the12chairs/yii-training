@@ -15,6 +15,7 @@ return array(
     'aliases' => array(
         'bootstrap' => realpath(__DIR__ . '/../extensions/bootstrap'),
     ),
+
     'behaviors' => array(
         array('class' => 'application.extensions.CorsBehavior',
             'route' => array('ApiController/list', 'ApiController/view', ),
@@ -70,6 +71,8 @@ return array(
                 array('api/update', 'pattern'=>'api/<model:\w+>/<id:\d+>', 'verb'=>'PUT'),
                 array('api/delete', 'pattern'=>'api/<model:\w+>/<id:\d+>', 'verb'=>'DELETE'),
                 array('api/create', 'pattern'=>'api/<model:\w+>', 'verb'=>'POST'),
+                // Other controllers
+                '<controller:\w+>/<action:\w+>'=>'<controller>/<action>',
             ),
         ),
         'db'=>array(
@@ -79,7 +82,7 @@ return array(
         'db'=>array(
             'connectionString' => 'mysql:host=localhost;dbname=musicband',
             'emulatePrepare' => true,
-            'username' => 'root',
+            'username' => '${root}',
             'password' => '123456',
             'charset' => 'utf8',
         ),

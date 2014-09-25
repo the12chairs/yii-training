@@ -340,7 +340,7 @@ class ApiController extends Controller
             // (this is an apache directive "ServerSignature On")
             $signature = ($_SERVER['SERVER_SIGNATURE'] == '') ? $_SERVER['SERVER_SOFTWARE'] . ' Server at ' . $_SERVER['SERVER_NAME'] . ' Port ' . $_SERVER['SERVER_PORT'] : $_SERVER['SERVER_SIGNATURE'];
 
-            // this should be templated in a real-world solution
+
             $body = '
                     <!DOCTYPE html>
                     <html>
